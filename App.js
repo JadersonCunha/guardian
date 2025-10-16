@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, TextInput, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import RightsScreen from './src/screens/RightsScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import AuthService from './src/services/AuthService';
@@ -94,7 +94,8 @@ export default function App() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
-        <Text style={styles.title}>🛡️ Guardian</Text>
+        <Image source={require('./assets/logo.png')} style={styles.logo} />
+        <Text style={styles.title}>Guardian</Text>
         <Text style={styles.subtitle}>Bem-vinda de volta!</Text>
         
         <View style={styles.loginBox}>
@@ -123,6 +124,26 @@ export default function App() {
           >
             <Text style={styles.forgotText}>Esqueceu o PIN?</Text>
           </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.closeBtn} 
+            onPress={() => {
+              Alert.alert(
+                'Fechar App',
+                'Tem certeza que deseja sair?',
+                [
+                  { text: 'Cancelar', style: 'cancel' },
+                  { text: 'Sair', style: 'destructive', onPress: () => {
+                    // Simula fechar o app
+                    setUserExists(null);
+                    setIsLoggedIn(false);
+                  }}
+                ]
+              );
+            }}
+          >
+            <Text style={styles.closeText}>✕ Fechar</Text>
+          </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
     );
@@ -132,7 +153,8 @@ export default function App() {
   if (userExists === null) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>🛡️ Guardian</Text>
+        <Image source={require('./assets/logo.png')} style={styles.logo} />
+        <Text style={styles.title}>Guardian</Text>
         <Text style={styles.subtitle}>Carregando...</Text>
       </View>
     );
@@ -170,7 +192,8 @@ export default function App() {
   // Tela Principal
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>🛡️ Guardian</Text>
+      <Image source={require('./assets/logo.png')} style={styles.logo} />
+      <Text style={styles.title}>Guardian</Text>
       <Text style={styles.welcome}>Você está protegida!</Text>
       
       <TouchableOpacity style={styles.emergencyBtn} onPress={handleEmergency}>
@@ -226,8 +249,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8f9fa',
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
+    justifyContent: 'flex-start',
+    paddingTop: 60,
+    paddingHorizontal: 20,
   },
   header: {
     flexDirection: 'row',
@@ -240,11 +264,17 @@ const styles = StyleSheet.create({
     color: '#0984e3',
     marginRight: 20,
   },
+  logo: {
+    width: 60,
+    height: 60,
+    marginBottom: 5,
+    borderRadius: 30,
+  },
   title: {
-    fontSize: 36,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#2d3436',
-    marginBottom: 10,
+    marginBottom: 5,
   },
   subtitle: {
     fontSize: 16,
@@ -253,9 +283,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   welcome: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#00b894',
-    marginBottom: 30,
+    marginBottom: 20,
     fontWeight: '600',
   },
   loginBox: {
@@ -300,55 +330,56 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emergencyBtn: {
-    width: 160,
-    height: 160,
-    borderRadius: 80,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     backgroundColor: '#d63031',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 40,
+    marginBottom: 25,
     elevation: 8,
   },
   emergencyText: {
-    fontSize: 40,
-    marginBottom: 5,
+    fontSize: 30,
+    marginBottom: 3,
   },
   emergencyLabel: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
     color: 'white',
   },
   menu: {
     width: '100%',
-    marginBottom: 20,
+    marginBottom: 15,
   },
   menuBtn: {
     backgroundColor: '#00b894',
-    padding: 18,
-    borderRadius: 12,
-    marginBottom: 12,
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 8,
     alignItems: 'center',
     elevation: 3,
   },
   cameraBtn: {
     backgroundColor: '#e17055',
-    padding: 18,
-    borderRadius: 12,
-    marginBottom: 12,
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 8,
     alignItems: 'center',
     elevation: 3,
   },
   menuText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
   },
   logoutBtn: {
     backgroundColor: '#636e72',
-    padding: 12,
-    borderRadius: 10,
-    width: '60%',
+    padding: 10,
+    borderRadius: 8,
+    width: '50%',
     alignItems: 'center',
+    marginTop: 10,
   },
   btnText: {
     color: 'white',
@@ -364,6 +395,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     textDecorationLine: 'underline',
+  },
+  closeBtn: {
+    marginTop: 20,
+    padding: 12,
+    backgroundColor: '#d63031',
+    borderRadius: 8,
+    width: '100%',
+    alignItems: 'center',
+  },
+  closeText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   emptyContainer: {
     alignItems: 'center',
