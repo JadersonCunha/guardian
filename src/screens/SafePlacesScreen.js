@@ -50,7 +50,6 @@ export default function SafePlacesScreen({ navigation }) {
   const findNearbyPlaces = async (coords) => {
     const places = [];
     
-    // Números de emergência sempre no topo
     places.push(
       {
         id: 'emergency_180',
@@ -81,13 +80,11 @@ export default function SafePlacesScreen({ navigation }) {
       }
     );
 
-    // Busca locais reais próximos
     try {
       const realPlaces = await searchRealPlaces(coords);
       places.push(...realPlaces);
     } catch (error) {
       console.log('Erro ao buscar locais reais:', error);
-      // Fallback para locais genéricos se a API falhar
       const fallbackPlaces = getFallbackPlaces(coords);
       places.push(...fallbackPlaces);
     }
@@ -99,10 +96,8 @@ export default function SafePlacesScreen({ navigation }) {
     const places = [];
     const { latitude, longitude } = coords;
     
-    // Confirma que temos a localização real do usuário
     console.log(`Localização do usuário: ${latitude}, ${longitude}`);
     
-    // Busca por tipos específicos de locais seguros
     const searchTypes = [
       { type: 'hospital', keyword: 'hospital OR UPA OR pronto atendimento', icon: 'hospital' },
       { type: 'police', keyword: 'delegacia OR polícia', icon: 'police' },
@@ -111,7 +106,6 @@ export default function SafePlacesScreen({ navigation }) {
     
     for (const searchType of searchTypes) {
       try {
-        // Usando a localização real para buscar
         const nearbyPlaces = await searchPlacesByType(latitude, longitude, searchType);
         places.push(...nearbyPlaces);
       } catch (error) {
@@ -123,15 +117,12 @@ export default function SafePlacesScreen({ navigation }) {
   };
   
   const searchPlacesByType = async (lat, lng, searchType) => {
-    // Esta função deveria usar Google Places API
-    // Por enquanto, retorna locais genéricos mas com aviso
     return getFallbackPlaces({ latitude: lat, longitude: lng }, searchType.type);
   };
   
   const getFallbackPlaces = (coords, specificType = null) => {
     const places = [];
     
-    // Aviso que são locais genéricos mas com localização real
     places.push({
       id: 'warning',
       name: '📍 SUA LOCALIZAÇÃO DETECTADA',
@@ -224,7 +215,6 @@ export default function SafePlacesScreen({ navigation }) {
       return;
     }
     
-    // Para locais genéricos, busca no Google Maps usando geolocalização
     let searchQuery = '';
     if (place.type === 'hospital') {
       searchQuery = 'hospital UPA pronto atendimento';
@@ -235,7 +225,6 @@ export default function SafePlacesScreen({ navigation }) {
     }
     
     if (userLocation && searchQuery) {
-      // URL que usa a localização atual do usuário para buscar
       const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(searchQuery)}/data=!3m1!4b1!4m2!2m1!6e1?hl=pt-BR`;
       
       Alert.alert(

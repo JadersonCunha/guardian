@@ -20,7 +20,6 @@ export default function ResetPasswordScreen({ onPasswordReset }) {
 
     setIsLoading(true);
     try {
-      // Esta função precisa ser criada no seu AuthService
       const result = await AuthService.resetUserPin(newPin);
 
       if (result.success) {

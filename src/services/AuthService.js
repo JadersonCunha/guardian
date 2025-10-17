@@ -4,7 +4,6 @@ class AuthService {
   static USER_KEY = 'user_data';
   static PIN_KEY = 'user_pin';
 
-  // Verifica se usuário já existe
   static async userExists() {
     try {
       const userData = await SecureStore.getItemAsync(this.USER_KEY);
@@ -15,7 +14,6 @@ class AuthService {
     }
   }
 
-  // Cadastra novo usuário
   static async registerUser(userData) {
     try {
       const user = {
@@ -37,7 +35,6 @@ class AuthService {
     }
   }
 
-  // Autentica usuário
   static async authenticateUser(pin) {
     try {
       const savedPin = await SecureStore.getItemAsync(this.PIN_KEY);
@@ -48,7 +45,6 @@ class AuthService {
     }
   }
 
-  // Pega dados do usuário
   static async getUserData() {
     try {
       const userData = await SecureStore.getItemAsync(this.USER_KEY);
@@ -59,7 +55,6 @@ class AuthService {
     }
   }
 
-  // Atualiza PIN
   static async updatePin(newPin) {
     try {
       const userData = await this.getUserData();
@@ -76,12 +71,10 @@ class AuthService {
     }
   }
 
-  // Limpa todos os dados (reset do app)
   static async clearAllData() {
     try {
       await SecureStore.deleteItemAsync(this.USER_KEY);
       await SecureStore.deleteItemAsync(this.PIN_KEY);
-      await SecureStore.deleteItemAsync('contacts'); // Remove contatos também
       console.log('✅ Todos os dados foram removidos');
       return { success: true };
     } catch (error) {

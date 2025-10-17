@@ -7,10 +7,8 @@ class EmergencyService {
     console.log('🚨 ATIVANDO EMERGÊNCIA!');
     
     try {
-      // Pega localização
       const userLocation = await this.getCurrentLocation();
       
-      // Pega contatos
       const emergencyContacts = await ContactService.getEmergencyContacts();
       
       if (emergencyContacts.length === 0) {
@@ -18,7 +16,6 @@ class EmergencyService {
         return { success: false, message: 'Adicione contatos de emergência primeiro!' };
       }
       
-      // Envia via WhatsApp
       await this.sendEmergencyWhatsApp(emergencyContacts, userLocation);
       
       console.log('✅ Emergência ativada! Mensagens enviadas.');
@@ -59,7 +56,6 @@ class EmergencyService {
 
   static async sendEmergencyWhatsApp(contacts, userLoc) {
     try {
-      // Monta a mensagem de emergência
       let sosMessage = '🚨 EMERGÊNCIA - Estou precisando de ajuda AGORA!';
       
       if (userLoc) {
@@ -71,10 +67,8 @@ class EmergencyService {
         sosMessage += '\n\n⚠️ Não consegui pegar minha localização, mas preciso de ajuda!';
       }
 
-      // Envia para cada contato via WhatsApp
       for (const contact of contacts) {
         await this.openWhatsApp(contact.phone, sosMessage);
-        // Pequena pausa entre envios
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
       
@@ -86,26 +80,20 @@ class EmergencyService {
 
   static async openWhatsApp(phoneNumber, message) {
     try {
-      // Remove caracteres especiais do telefone
       const cleanPhone = phoneNumber.replace(/[^0-9]/g, '');
       
-      // Adiciona código do Brasil se não tiver
       const fullPhone = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
       
-      // Codifica a mensagem para URL
       const encodedMessage = encodeURIComponent(message);
       
-      // URL do WhatsApp
       const whatsappUrl = `whatsapp://send?phone=${fullPhone}&text=${encodedMessage}`;
       
-      // Verifica se WhatsApp está instalado
       const canOpen = await Linking.canOpenURL(whatsappUrl);
       
       if (canOpen) {
         await Linking.openURL(whatsappUrl);
         console.log(`💚 WhatsApp aberto para: ${phoneNumber}`);
       } else {
-        // Fallback: abre WhatsApp Web
         const webUrl = `https://wa.me/${fullPhone}?text=${encodedMessage}`;
         await Linking.openURL(webUrl);
         console.log(`🌐 WhatsApp Web aberto para: ${phoneNumber}`);

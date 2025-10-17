@@ -20,7 +20,6 @@ export default function ForgotPasswordScreen({ navigation }) {
     setIsLoading(true);
 
     try {
-      // Verifica se o email existe no sistema
       const userData = await AuthService.getUserData();
       
       if (!userData || userData.email.toLowerCase() !== email.toLowerCase()) {
@@ -29,14 +28,13 @@ export default function ForgotPasswordScreen({ navigation }) {
         return;
       }
 
-      // Simula envio de email (em produção seria uma API real)
       await sendPasswordResetRequest(email);
       
       Alert.alert(
         '✅ Email enviado!', 
         `Enviamos instruções para ${email}. Verifique sua caixa de entrada e spam.`,
         [
-          { text: 'OK', onPress: () => navigation.goBack() } // Volta para a tela de escolha
+          { text: 'OK', onPress: () => navigation.goBack() }
         ]
       );
 
@@ -48,13 +46,10 @@ export default function ForgotPasswordScreen({ navigation }) {
   };
 
   const sendPasswordResetRequest = async (email) => {
-    // ISSO É UMA SIMULAÇÃO. Em um app real, esta função chamaria seu servidor.
-    // O servidor, então, enviaria o email de verdade.
     console.log(`SIMULAÇÃO: Pedido de redefinição de senha para ${email}`);
     const deepLink = 'guardian://reset-password';
     console.log(`SIMULAÇÃO: O link enviado seria: ${deepLink}`);
     
-    // Simulamos um sucesso após 1 segundo para parecer mais realista.
     return new Promise(resolve => {
       setTimeout(() => resolve({ success: true }), 1000);
     });

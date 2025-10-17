@@ -15,7 +15,6 @@ export default function RightsScreen({ navigation }) {
   const sendQuestion = async () => {
     if (!question.trim()) return;
 
-    // Adiciona pergunta do usuário
     const userMessage = {
       id: Date.now(),
       type: 'user',
@@ -27,10 +26,8 @@ export default function RightsScreen({ navigation }) {
     setIsLoading(true);
 
     try {
-      // Aqui você vai colocar sua API Key e endpoint do Gemini
       const response = await callGeminiAgent(question);
       
-      // Adiciona resposta do bot
       const botMessage = {
         id: Date.now() + 1,
         type: 'bot',

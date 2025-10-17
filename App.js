@@ -22,15 +22,12 @@ export default function App() {
   const pinInputRef = useRef(null);
 
   useEffect(() => {
-    // Roda apenas uma vez para verificar o usuário
     checkUserExists();
 
-    // Listener para deep links com o app já aberto
     const subscription = Linking.addEventListener('url', ({ url }) => {
       handleDeepLink(url);
     });
 
-    // Verifica se o app foi aberto por um deep link
     Linking.getInitialURL().then(url => {
       if (url) {
         handleDeepLink(url);
@@ -41,7 +38,6 @@ export default function App() {
   }, []);
 
   const checkUserExists = async () => {
-    // Garante que a tela de carregamento seja exibida
     setUserExists(null); 
     setShowWelcomeScreen(true);
     const exists = await AuthService.userExists();
@@ -52,10 +48,7 @@ export default function App() {
       setUserData(user);
     }
 
-    setCurrentAuthView('choice'); // Sempre começa na tela de escolha
-
-    // Esconde a tela de carregamento/boas-vindas após a verificação
-    // Usamos um timeout para a transição ser mais suave
+    setCurrentAuthView('choice');
     setTimeout(() => setShowWelcomeScreen(false), 1500);
   };
 
@@ -77,7 +70,6 @@ export default function App() {
   };
 
   const handleEmergency = async () => {
-    // Busca contatos salvos
     const ContactService = require('./src/services/ContactService').default;
     const savedContacts = await ContactService.getEmergencyContacts();
     
@@ -103,7 +95,6 @@ export default function App() {
     );
   };
 
-  // Tela de Carregamento / Boas-vindas
   if (showWelcomeScreen) {
     return (
       <View style={styles.container}>
@@ -114,16 +105,14 @@ export default function App() {
     );
   }
 
-  // Prioridade máxima: se um deep link de reset de senha foi detectado
   if (deepLink === 'reset-password') {
     return <ResetPasswordScreen onPasswordReset={() => {
-      setDeepLink(null); // Limpa o deep link
-      setIsLoggedIn(false); // Garante que o usuário não está logado
-      setCurrentAuthView('choice'); // Volta para a tela de escolha
+      setDeepLink(null);
+      setIsLoggedIn(false);
+      setCurrentAuthView('choice');
     }} />;
   }
 
-  // Tela de Cadastro (primeira vez)
   if (!isLoggedIn && !showWelcomeScreen) {
     switch (currentAuthView) {
       case 'choice':
@@ -152,15 +141,14 @@ export default function App() {
         );
       case 'register':
         return <RegisterScreen onRegisterComplete={handleRegisterComplete} onSwitchToLogin={() => setCurrentAuthView('login')} />;
-      default: // 'loading'
-        return null; // A tela de carregamento já foi mostrada
+      default:
+        return null;
       case 'forgot':
         return <ForgotPasswordScreen navigation={{ goBack: () => setCurrentAuthView('choice') }} />;
 
     }
   }
 
-  // Loading (enquanto verifica se usuário existe)
   if (userExists === null) {
     return (
       <View style={styles.container}>
@@ -171,30 +159,25 @@ export default function App() {
     );
   }
 
-  // Tela de Contatos
   if (currentScreen === 'contacts') {
     const ContactsScreen = require('./src/screens/ContactsScreen').default;
     return <ContactsScreen navigation={{ goBack: () => setCurrentScreen('home') }} />;
   }
 
-  // Tela de Câmera
   if (currentScreen === 'camera') {
     const CameraScreen = require('./src/screens/CameraScreen').default;
     return <CameraScreen navigation={{ goBack: () => setCurrentScreen('home') }} />;
   }
 
-  // Tela de Locais Seguros
   if (currentScreen === 'safe-places') {
     const SafePlacesScreen = require('./src/screens/SafePlacesScreen').default;
     return <SafePlacesScreen navigation={{ goBack: () => setCurrentScreen('home') }} />;
   }
 
-  // Tela de Direitos
   if (currentScreen === 'rights') {
     return <RightsScreen navigation={{ goBack: () => setCurrentScreen('home') }} />;
   }
 
-  // Tela Principal
   return (
     <View style={styles.container}>
       <Image source={require('./assets/logo.png')} style={styles.logo} />
@@ -240,7 +223,7 @@ export default function App() {
         style={styles.logoutBtn} 
         onPress={() => {
           setIsLoggedIn(false);
-          setCurrentAuthView('choice'); // Ao sair, volta para a tela de escolha
+          setCurrentAuthView('choice');
         }}
       >
         <Text style={styles.btnText}>🚪 Sair</Text>
@@ -409,7 +392,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
-  emptyContainer: { // emptyContainer e addBtn não são usados aqui, mas mantidos por enquanto
+  emptyContainer: {
     alignItems: 'center',
     marginTop: 50,
   },
