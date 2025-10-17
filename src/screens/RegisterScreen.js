@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import AuthService from '../services/AuthService';
 
-export default function RegisterScreen({ onRegisterComplete }) {
+export default function RegisterScreen({ onRegisterComplete, onSwitchToLogin }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -135,6 +135,14 @@ export default function RegisterScreen({ onRegisterComplete }) {
             <Text style={styles.infoText}>• Dados ficam apenas no seu celular</Text>
             <Text style={styles.infoText}>• PIN é usado para proteger o app</Text>
           </View>
+
+          {onSwitchToLogin && (
+            <TouchableOpacity 
+              style={styles.loginLinkBtn} 
+              onPress={onSwitchToLogin}>
+              <Text style={styles.loginLinkText}>Já tenho uma conta</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -243,5 +251,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#636e72',
     marginBottom: 3,
+  },
+  loginLinkBtn: {
+    marginTop: 20,
+    padding: 10,
+  },
+  loginLinkText: {
+    color: '#74b9ff',
+    fontSize: 14,
+    textAlign: 'center',
+    textDecorationLine: 'underline',
   },
 });

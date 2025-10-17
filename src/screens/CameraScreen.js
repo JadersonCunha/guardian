@@ -1,41 +1,106 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Linking, ScrollView } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { Audio } from 'expo-av';
+import * as Sharing from 'expo-sharing';
 import ContactService from '../services/ContactService';
 
 export default function CameraScreen({ navigation }) {
-  const [isRecording, setIsRecording] = useState(false);
+  const [recording, setRecording] = useState(null);
+  const [isRecordingAudio, setIsRecordingAudio] = useState(false);
 
-  const openCamera = () => {
+  const openEvidenceRecorder = () => {
     Alert.alert(
       '📹 Gravar Evidências',
       'Escolha o tipo de evidência:',
       [
         { text: 'Cancelar', style: 'cancel' },
-        { text: '📷 Foto', onPress: () => openNativeCamera('photo') },
-        { text: '🎥 Vídeo', onPress: () => openNativeCamera('video') },
-        { text: '🎤 Áudio', onPress: () => openVoiceRecorder() }
+        { text: '📷 Tirar Foto', onPress: takePhoto, disabled: isRecordingAudio },
+        { text: '🎥 Gravar Vídeo', onPress: recordVideo, disabled: isRecordingAudio },
+        { text: '🎤 Gravar Áudio', onPress: startRecording }
       ]
     );
   };
 
-  const openNativeCamera = (type) => {
-    Alert.alert(
-      '📱 Câmera',
-      `Abra o app de ${type === 'photo' ? 'Câmera' : 'Câmera (vídeo)'} do seu celular para gravar evidências. Depois compartilhe com seus contatos de emergência.`,
-      [
-        { text: 'Entendi', style: 'default' }
-      ]
-    );
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permissão negada', 'Precisamos de acesso à câmera para tirar fotos.');
+      return;
+    }
+
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      shareEvidence(result.assets[0].uri);
+    }
   };
 
-  const openVoiceRecorder = () => {
-    Alert.alert(
-      '🎤 Gravador de Áudio',
-      'Abra o app Gravador de Voz do seu celular para gravar áudio. Depois compartilhe com seus contatos de emergência.',
-      [
-        { text: 'Entendi', style: 'default' }
-      ]
-    );
+  const recordVideo = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permissão negada', 'Precisamos de acesso à câmera para gravar vídeos.');
+      return;
+    }
+
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+      quality: ImagePicker.UIImagePickerControllerQualityType.Medium,
+    });
+
+    if (!result.canceled) {
+      shareEvidence(result.assets[0].uri);
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      const { status } = await Audio.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permissão negada', 'Precisamos de acesso ao microfone para gravar áudio.');
+        return;
+      }
+
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      console.log('Iniciando gravação de áudio...');
+      const { recording } = await Audio.Recording.createAsync(
+         Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
+      setRecording(recording);
+      setIsRecordingAudio(true);
+      console.log('Gravação iniciada.');
+    } catch (err) {
+      console.error('Falha ao iniciar gravação', err);
+      Alert.alert('Erro', 'Não foi possível iniciar a gravação de áudio.');
+    }
+  };
+
+  const stopRecording = async () => {
+    console.log('Parando gravação...');
+    setIsRecordingAudio(false);
+    await recording.stopAndUnloadAsync();
+    const uri = recording.getURI(); 
+    setRecording(null);
+    console.log('Gravação parada. URI:', uri);
+    if (uri) {
+      shareEvidence(uri);
+    }
+  };
+
+  const shareEvidence = async (uri) => {
+    if (!(await Sharing.isAvailableAsync())) {
+      Alert.alert('Compartilhamento indisponível', 'Seu dispositivo não permite compartilhar arquivos.');
+      return;
+    }
+    await Sharing.shareAsync(uri);
   };
 
   const sendEmergencyMessage = async () => {
@@ -65,16 +130,25 @@ export default function CameraScreen({ navigation }) {
         <Text style={styles.title}>📹 Evidências</Text>
       </View>
 
-      <View style={styles.content}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.description}>
           Grave evidências importantes para sua segurança:
         </Text>
 
-        <TouchableOpacity style={styles.cameraButton} onPress={openCamera}>
-          <Text style={styles.buttonIcon}>📱</Text>
-          <Text style={styles.buttonText}>Abrir Câmera/Gravador</Text>
-          <Text style={styles.buttonSubtext}>Foto, vídeo ou áudio</Text>
-        </TouchableOpacity>
+        {isRecordingAudio ? (
+          <TouchableOpacity style={[styles.cameraButton, styles.stopButton]} onPress={stopRecording}>
+            <Text style={styles.buttonIcon}>🛑</Text>
+            <Text style={styles.buttonText}>Parar Gravação</Text>
+            <Text style={styles.buttonSubtext}>Toque para finalizar e compartilhar</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.cameraButton} onPress={openEvidenceRecorder}>
+            <Text style={styles.buttonIcon}>📱</Text>
+            <Text style={styles.buttonText}>Abrir Câmera/Gravador</Text>
+            <Text style={styles.buttonSubtext}>Foto, vídeo ou áudio</Text>
+          </TouchableOpacity>
+        )}
+        
 
         <TouchableOpacity style={styles.emergencyButton} onPress={sendEmergencyMessage}>
           <Text style={styles.buttonIcon}>🚨</Text>
@@ -84,13 +158,13 @@ export default function CameraScreen({ navigation }) {
 
         <View style={styles.instructions}>
           <Text style={styles.instructionTitle}>💡 Como usar:</Text>
-          <Text style={styles.instructionText}>1. Toque em "Abrir Câmera/Gravador"</Text>
-          <Text style={styles.instructionText}>2. Escolha foto, vídeo ou áudio</Text>
+          <Text style={styles.instructionText}>1. Toque em "Abrir Câmera/Gravador".</Text>
+          <Text style={styles.instructionText}>2. Escolha foto, vídeo ou áudio.</Text>
           <Text style={styles.instructionText}>3. Grave suas evidências</Text>
           <Text style={styles.instructionText}>4. Compartilhe com seus contatos</Text>
           <Text style={styles.instructionText}>5. Use "Avisar Contatos" para alertar</Text>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -117,9 +191,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#fff',
   },
-  content: {
-    flex: 1,
+  scrollContent: {
     padding: 20,
+    paddingBottom: 40, // Espaço extra no final
     alignItems: 'center',
   },
   description: {
@@ -137,6 +211,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: '100%',
     elevation: 5,
+  },
+  stopButton: {
+    backgroundColor: '#f1c40f', // Cor amarela para indicar atenção
   },
   emergencyButton: {
     backgroundColor: '#d63031',

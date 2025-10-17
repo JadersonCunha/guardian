@@ -4,6 +4,7 @@
     "slug": "guardian-app",
     "version": "1.0.0",
     "orientation": "portrait",
+    "scheme": "guardian",
     "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
@@ -26,7 +27,14 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O aplicativo precisa de acesso às suas fotos para que você possa salvar e compartilhar evidências.",
+          "cameraPermission": "O aplicativo precisa de acesso à sua câmera para que você possa gravar evidências."
+        }
+      ]
     ]
   }
 }

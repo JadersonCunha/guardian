@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, TextInput, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import * as Linking from 'expo-linking';
 import RightsScreen from './src/screens/RightsScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
+import LoginScreen from './src/screens/LoginScreen'; // Import the new LoginScreen
+import AuthChoiceScreen from './src/screens/AuthChoiceScreen';
+import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
+import ResetPasswordScreen from './src/screens/ResetPasswordScreen';
 import AuthService from './src/services/AuthService';
 
 export default function App() {
@@ -9,16 +14,36 @@ export default function App() {
   const [pin, setPin] = useState('');
   const [currentScreen, setCurrentScreen] = useState('home');
   const [contacts, setContacts] = useState([]);
-  const [newContact, setNewContact] = useState({ name: '', phone: '' });
   const [userExists, setUserExists] = useState(null); // null = carregando, true = existe, false = não existe
   const [userData, setUserData] = useState(null);
+  const [currentAuthView, setCurrentAuthView] = useState('loading'); // 'loading', 'choice', 'login', 'register', 'forgot'
+  const [showWelcomeScreen, setShowWelcomeScreen] = useState(true); // Novo estado
+  const [deepLink, setDeepLink] = useState(null);
   const pinInputRef = useRef(null);
 
   useEffect(() => {
+    // Roda apenas uma vez para verificar o usuário
     checkUserExists();
+
+    // Listener para deep links com o app já aberto
+    const subscription = Linking.addEventListener('url', ({ url }) => {
+      handleDeepLink(url);
+    });
+
+    // Verifica se o app foi aberto por um deep link
+    Linking.getInitialURL().then(url => {
+      if (url) {
+        handleDeepLink(url);
+      }
+    });
+
+    return () => subscription.remove();
   }, []);
 
   const checkUserExists = async () => {
+    // Garante que a tela de carregamento seja exibida
+    setUserExists(null); 
+    setShowWelcomeScreen(true);
     const exists = await AuthService.userExists();
     setUserExists(exists);
     
@@ -26,32 +51,29 @@ export default function App() {
       const user = await AuthService.getUserData();
       setUserData(user);
     }
+
+    setCurrentAuthView('choice'); // Sempre começa na tela de escolha
+
+    // Esconde a tela de carregamento/boas-vindas após a verificação
+    // Usamos um timeout para a transição ser mais suave
+    setTimeout(() => setShowWelcomeScreen(false), 1500);
   };
 
-  const handleLogin = async () => {
-    const isValid = await AuthService.authenticateUser(pin);
-    
-    if (isValid) {
-      setIsLoggedIn(true);
-      Alert.alert('✅ Sucesso!', `Bem-vinda, ${userData?.name || 'usuária'}!`);
-    } else {
-      Alert.alert('❌ Erro', 'PIN incorreto. Tente novamente.');
-      setPin('');
+  const handleDeepLink = (url) => {
+    const { path } = Linking.parse(url);
+    if (path === 'reset-password') {
+      setDeepLink('reset-password');
     }
   };
 
-  const handleRegisterComplete = () => {
-    checkUserExists(); // Recarrega dados do usuário
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+    Alert.alert('✅ Sucesso!', `Bem-vinda de volta, ${userData?.name || 'usuária'}!`);
   };
 
-  const addDefaultContact = () => {
-    const defaultContact = {
-      id: Date.now().toString(),
-      name: 'Suporte Guardian',
-      phone: '51985330121'
-    };
-    setContacts([defaultContact]);
-    Alert.alert('✅ Pronto!', 'Contato adicionado! As mensagens serão enviadas via WhatsApp.');
+  const handleRegisterComplete = () => {
+    checkUserExists();
+    setCurrentAuthView('choice'); // Após o registro, volta para a tela de escolha
   };
 
   const handleEmergency = async () => {
@@ -81,72 +103,61 @@ export default function App() {
     );
   };
 
-  // Tela de Cadastro (primeira vez)
-  if (userExists === false) {
-    return <RegisterScreen onRegisterComplete={handleRegisterComplete} />;
-  }
-
-  // Tela de Login
-  if (userExists === true && !isLoggedIn) {
+  // Tela de Carregamento / Boas-vindas
+  if (showWelcomeScreen) {
     return (
-      <KeyboardAvoidingView 
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-      >
+      <View style={styles.container}>
         <Image source={require('./assets/logo.png')} style={styles.logo} />
         <Text style={styles.title}>Guardian</Text>
-        <Text style={styles.subtitle}>Bem-vinda de volta!</Text>
-        
-        <View style={styles.loginBox}>
-          <Text style={styles.instruction}>Digite seu PIN para entrar:</Text>
-          <Text style={styles.userInfo}>👤 {userData?.name}</Text>
-          
-          <TextInput
-            style={styles.pinInput}
-            placeholder="Toque para digitar seu PIN"
-            value={pin}
-            onChangeText={setPin}
-            secureTextEntry
-            keyboardType="numeric"
-            maxLength={4}
-            returnKeyType="done"
-            onSubmitEditing={handleLogin}
-          />
-          
-          <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
-            <Text style={styles.btnText}>🔓 Entrar</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.forgotBtn} 
-            onPress={() => setCurrentScreen('forgot')}
-          >
-            <Text style={styles.forgotText}>Esqueceu o PIN?</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.closeBtn} 
-            onPress={() => {
-              Alert.alert(
-                'Fechar App',
-                'Tem certeza que deseja sair?',
-                [
-                  { text: 'Cancelar', style: 'cancel' },
-                  { text: 'Sair', style: 'destructive', onPress: () => {
-                    // Simula fechar o app
-                    setUserExists(null);
-                    setIsLoggedIn(false);
-                  }}
-                ]
-              );
-            }}
-          >
-            <Text style={styles.closeText}>✕ Fechar</Text>
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
+        <Text style={styles.subtitle}>{userExists === null ? 'Carregando...' : 'Bem-vinda!'}</Text>
+      </View>
     );
+  }
+
+  // Prioridade máxima: se um deep link de reset de senha foi detectado
+  if (deepLink === 'reset-password') {
+    return <ResetPasswordScreen onPasswordReset={() => {
+      setDeepLink(null); // Limpa o deep link
+      setIsLoggedIn(false); // Garante que o usuário não está logado
+      setCurrentAuthView('choice'); // Volta para a tela de escolha
+    }} />;
+  }
+
+  // Tela de Cadastro (primeira vez)
+  if (!isLoggedIn && !showWelcomeScreen) {
+    switch (currentAuthView) {
+      case 'choice':
+        return (
+          <AuthChoiceScreen
+            onNavigateToLogin={() => {
+              if (userExists) {
+                setCurrentAuthView('login');
+              } else {
+                Alert.alert('Nenhuma conta encontrada', 'Por favor, crie uma conta primeiro.', [
+                  { text: 'OK', onPress: () => setCurrentAuthView('register') }
+                ]);
+              }
+            }}
+            onNavigateToRegister={() => setCurrentAuthView('register')}
+          />
+        );
+      case 'login':
+        return (
+          <LoginScreen
+            userData={userData}
+            onLoginSuccess={handleLoginSuccess}
+            onForgotPassword={() => setCurrentAuthView('forgot')}
+            onGoBack={() => setCurrentAuthView('choice')}
+          />
+        );
+      case 'register':
+        return <RegisterScreen onRegisterComplete={handleRegisterComplete} onSwitchToLogin={() => setCurrentAuthView('login')} />;
+      default: // 'loading'
+        return null; // A tela de carregamento já foi mostrada
+      case 'forgot':
+        return <ForgotPasswordScreen navigation={{ goBack: () => setCurrentAuthView('choice') }} />;
+
+    }
   }
 
   // Loading (enquanto verifica se usuário existe)
@@ -170,12 +181,6 @@ export default function App() {
   if (currentScreen === 'camera') {
     const CameraScreen = require('./src/screens/CameraScreen').default;
     return <CameraScreen navigation={{ goBack: () => setCurrentScreen('home') }} />;
-  }
-
-  // Tela de Recuperação de Senha
-  if (currentScreen === 'forgot') {
-    const ForgotPasswordScreen = require('./src/screens/ForgotPasswordScreen').default;
-    return <ForgotPasswordScreen navigation={{ goBack: () => setCurrentScreen('home') }} />;
   }
 
   // Tela de Locais Seguros
@@ -235,7 +240,7 @@ export default function App() {
         style={styles.logoutBtn} 
         onPress={() => {
           setIsLoggedIn(false);
-          setPin('');
+          setCurrentAuthView('choice'); // Ao sair, volta para a tela de escolha
         }}
       >
         <Text style={styles.btnText}>🚪 Sair</Text>
@@ -404,12 +409,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
-  closeText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  emptyContainer: {
+  emptyContainer: { // emptyContainer e addBtn não são usados aqui, mas mantidos por enquanto
     alignItems: 'center',
     marginTop: 50,
   },

@@ -30,13 +30,13 @@ export default function ForgotPasswordScreen({ navigation }) {
       }
 
       // Simula envio de email (em produção seria uma API real)
-      await simulateEmailSend(email, userData);
+      await sendPasswordResetRequest(email);
       
       Alert.alert(
         '✅ Email enviado!', 
         `Enviamos instruções para ${email}. Verifique sua caixa de entrada e spam.`,
         [
-          { text: 'OK', onPress: () => navigation.goBack() }
+          { text: 'OK', onPress: () => navigation.goBack() } // Volta para a tela de escolha
         ]
       );
 
@@ -47,16 +47,16 @@ export default function ForgotPasswordScreen({ navigation }) {
     setIsLoading(false);
   };
 
-  const simulateEmailSend = async (email, userData) => {
-    // Em produção, aqui você faria uma chamada para sua API
-    // que enviaria um email real com um link de recuperação
+  const sendPasswordResetRequest = async (email) => {
+    // ISSO É UMA SIMULAÇÃO. Em um app real, esta função chamaria seu servidor.
+    // O servidor, então, enviaria o email de verdade.
+    console.log(`SIMULAÇÃO: Pedido de redefinição de senha para ${email}`);
+    const deepLink = 'guardian://reset-password';
+    console.log(`SIMULAÇÃO: O link enviado seria: ${deepLink}`);
     
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        console.log(`Email de recuperação enviado para: ${email}`);
-        console.log(`PIN atual da usuária: ${userData.pin}`);
-        resolve();
-      }, 2000);
+    // Simulamos um sucesso após 1 segundo para parecer mais realista.
+    return new Promise(resolve => {
+      setTimeout(() => resolve({ success: true }), 1000);
     });
   };
 
@@ -122,10 +122,10 @@ export default function ForgotPasswordScreen({ navigation }) {
 
         <View style={styles.infoBox}>
           <Text style={styles.infoTitle}>💡 Como funciona:</Text>
-          <Text style={styles.infoText}>• Enviamos um email com seu PIN atual</Text>
+          <Text style={styles.infoText}>• Enviamos um email com um link seguro.</Text>
           <Text style={styles.infoText}>• Verifique sua caixa de entrada e spam</Text>
-          <Text style={styles.infoText}>• Use o PIN para entrar no app</Text>
-          <Text style={styles.infoText}>• Depois você pode alterar o PIN nas configurações</Text>
+          <Text style={styles.infoText}>• Clique no link para abrir o app na tela de redefinição.</Text>
+          <Text style={styles.infoText}>• Crie um novo PIN e pronto!</Text>
         </View>
       </View>
     </KeyboardAvoidingView>
