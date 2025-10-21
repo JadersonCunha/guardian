@@ -1,9 +1,14 @@
 import * as SecureStore from 'expo-secure-store';
 
 class AuthService {
-  static USER_KEY = 'user_data';
-  static PIN_KEY = 'user_pin';
-
+  // ... (código existente)
+  // Chaves para armazenamento seguro
+  static USER_KEY = 'guardian_user_data';
+  static PIN_KEY = 'guardian_user_pin';
+  static FAILED_ATTEMPTS_KEY = 'guardian_failed_login_attempts';
+  static LAST_FAILED_ATTEMPT_TIME_KEY = 'guardian_last_failed_attempt_time';
+  static MAX_FAILED_ATTEMPTS = 2;
+  
   static async userExists() {
     try {
       const userData = await SecureStore.getItemAsync(this.USER_KEY);
@@ -35,14 +40,54 @@ class AuthService {
     }
   }
 
+  /**
+   * Autentica o usuário e rastreia tentativas falhas.
+   * @param {string} pin - O PIN inserido pelo usuário.
+   * @returns {Promise<{success: boolean, intruderDetected?: boolean, message: string}>}
+   */
   static async authenticateUser(pin) {
     try {
       const savedPin = await SecureStore.getItemAsync(this.PIN_KEY);
-      return savedPin === pin;
+      if (savedPin === pin) {
+        await this.resetFailedAttempts();
+        return { success: true, message: 'Login bem-sucedido!' };
+      } else {
+        const attempts = await this.recordFailedAttempt();
+        if (attempts >= this.MAX_FAILED_ATTEMPTS) {
+          return { success: false, intruderDetected: true, message: 'PIN incorreto. Alerta de segurança ativado.' };
+        }
+        return { success: false, message: `PIN incorreto. Tentativa ${attempts} de ${this.MAX_FAILED_ATTEMPTS}.` };
+      }
     } catch (error) {
       console.error('Erro na autenticação:', error);
-      return false;
+      return { success: false, message: 'Erro durante a autenticação.' };
     }
+  }
+
+  static async getFailedAttempts() {
+    const attempts = await SecureStore.getItemAsync(this.FAILED_ATTEMPTS_KEY);
+    const lastAttemptTime = await SecureStore.getItemAsync(this.LAST_FAILED_ATTEMPT_TIME_KEY);
+
+    // Reseta as tentativas se passaram mais de 5 minutos
+    const FIVE_MINUTES = 5 * 60 * 1000;
+    if (lastAttemptTime && (Date.now() - parseInt(lastAttemptTime, 10)) > FIVE_MINUTES) {
+      await this.resetFailedAttempts();
+      return 0;
+    }
+    return attempts ? parseInt(attempts, 10) : 0;
+  }
+
+  static async recordFailedAttempt() {
+    let attempts = await this.getFailedAttempts();
+    attempts++;
+    await SecureStore.setItemAsync(this.FAILED_ATTEMPTS_KEY, attempts.toString());
+    await SecureStore.setItemAsync(this.LAST_FAILED_ATTEMPT_TIME_KEY, Date.now().toString());
+    return attempts;
+  }
+
+  static async resetFailedAttempts() {
+    await SecureStore.deleteItemAsync(this.FAILED_ATTEMPTS_KEY);
+    await SecureStore.deleteItemAsync(this.LAST_FAILED_ATTEMPT_TIME_KEY);
   }
 
   static async getUserData() {
@@ -75,6 +120,7 @@ class AuthService {
     try {
       await SecureStore.deleteItemAsync(this.USER_KEY);
       await SecureStore.deleteItemAsync(this.PIN_KEY);
+      await this.resetFailedAttempts();
       console.log('✅ Todos os dados foram removidos');
       return { success: true };
     } catch (error) {

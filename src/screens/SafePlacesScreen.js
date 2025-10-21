@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, Linking, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, Linking, ActivityIndicator, Image } from 'react-native';
 import * as Location from 'expo-location';
 
 export default function SafePlacesScreen({ navigation }) {
@@ -300,6 +300,7 @@ export default function SafePlacesScreen({ navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backBtn}>← Voltar</Text>
         </TouchableOpacity>
+        <Image source={require('../../assets/logo.png')} style={styles.headerLogo} />
         <Text style={styles.title}>📍 Locais Seguros</Text>
       </View>
 
@@ -367,6 +368,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#74b9ff',
     marginRight: 20,
+  },
+  headerLogo: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+    borderRadius: 12,
   },
   title: {
     fontSize: 20,

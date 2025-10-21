@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, TextInput } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, TextInput, Switch, Image } from 'react-native';
 import * as Contacts from 'expo-contacts';
 import ContactService from '../services/ContactService';
 
@@ -9,6 +9,7 @@ export default function ContactsScreen({ navigation }) {
   const [phoneContacts, setPhoneContacts] = useState([]);
   const [filteredContacts, setFilteredContacts] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
+  const [shouldReceiveIntruderAlert, setShouldReceiveIntruderAlert] = useState(true); // Novo estado para o switch
 
   useEffect(() => {
     loadMyContacts();
@@ -63,7 +64,7 @@ export default function ContactsScreen({ navigation }) {
   };
 
   const addContactFromPhone = async (contact) => {
-    await ContactService.addEmergencyContact(contact);
+    await ContactService.addEmergencyContact(contact, shouldReceiveIntruderAlert); // Passa a preferência do switch
     setSearchText('');
     setIsAdding(false);
     loadMyContacts();
@@ -74,7 +75,7 @@ export default function ContactsScreen({ navigation }) {
     const contacts = await ContactService.getEmergencyContacts();
     const hasDefault = contacts.some(c => c.phone === '51985330121');
     
-    if (!hasDefault) {
+    if (!hasDefault) { // O contato padrão deve receber alertas por padrão
       await ContactService.addEmergencyContact({
         name: 'Contato de Emergência',
         phone: '51985330121'
@@ -104,6 +105,11 @@ export default function ContactsScreen({ navigation }) {
         <Text style={styles.personName}>{item.name}</Text>
         <Text style={styles.personPhone}>{item.phone}</Text>
       </View>
+      {item.receiveIntruderAlert && ( // Indicador visual se o contato recebe alerta de intruso
+        <View style={styles.intruderAlertIndicator}>
+          <Text style={styles.intruderAlertText}>🚨</Text>
+        </View>
+      )}
       <TouchableOpacity 
         style={styles.deleteBtn}
         onPress={() => deleteContact(item.id)}
@@ -119,6 +125,7 @@ export default function ContactsScreen({ navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backBtn}>← Voltar</Text>
         </TouchableOpacity>
+        <Image source={require('../../assets/logo.png')} style={styles.headerLogo} />
         <Text style={styles.title}>Meus Contatos</Text>
       </View>
       
@@ -158,16 +165,31 @@ export default function ContactsScreen({ navigation }) {
                 ))}
               </View>
             )}
+
+            <View style={styles.switchOuterContainer}>
+              <View style={styles.switchContainer}>
+                <Text style={styles.switchLabel}>Receber Alerta de Intruso?</Text>
+                <Switch
+                  trackColor={{ false: "#767577", true: "#00b894" }}
+                  thumbColor={shouldReceiveIntruderAlert ? "#f4f3f4" : "#f4f3f4"}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={setShouldReceiveIntruderAlert}
+                  value={shouldReceiveIntruderAlert}
+                />
+              </View>
+            </View>
             
-            <TouchableOpacity 
-              style={styles.cancelBtn} 
-              onPress={() => {
-                setIsAdding(false);
-                setSearchText('');
-              }}
-            >
-              <Text style={styles.btnText}>Cancelar</Text>
-            </TouchableOpacity>
+            <View style={styles.formBtns}>
+              <TouchableOpacity 
+                style={styles.cancelBtn} 
+                onPress={() => {
+                  setIsAdding(false);
+                  setSearchText('');
+                }}
+              >
+                <Text style={styles.btnText}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         ) : (
           <View style={styles.buttonsContainer}>
@@ -209,6 +231,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#0984e3',
     marginRight: 20,
+  },
+  headerLogo: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+    borderRadius: 12,
   },
   title: {
     fontSize: 22,
@@ -261,6 +289,16 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
+  intruderAlertIndicator: {
+    backgroundColor: '#ffeaa7', // Um amarelo claro para destacar
+    borderRadius: 5,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    marginLeft: 10,
+  },
+  intruderAlertText: {
+    fontSize: 14,
+  },
   addContactBtn: {
     backgroundColor: '#00b894',
     padding: 16,
@@ -283,6 +321,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#6c5ce7',
     padding: 16,
     borderRadius: 12,
+    alignItems: 'center',
+  },
+  switchOuterContainer: {
+    backgroundColor: '#f1f2f6',
+    borderRadius: 12,
+    padding: 15,
+    marginBottom: 15,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   addForm: {
@@ -327,6 +376,7 @@ const styles = StyleSheet.create({
   formBtns: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 10,
   },
   cancelBtn: {
     backgroundColor: '#74b9ff',

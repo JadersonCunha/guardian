@@ -1,19 +1,45 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import AuthService from '../services/AuthService';
+import EmergencyService from '../services/EmergencyService';
 
 export default function LoginScreen({ userData, onLoginSuccess, onForgotPassword, onGoBack }) {
   const [pin, setPin] = useState('');
   const pinInputRef = useRef(null);
 
   const handleLogin = async () => {
-    const isValid = await AuthService.authenticateUser(pin);
-    
-    if (isValid) {
+    if (!pin) {
+      Alert.alert('Atenção', 'Por favor, digite seu PIN.');
+      return;
+    }
+
+    const result = await AuthService.authenticateUser(pin);
+
+    if (result.success) {
       onLoginSuccess();
     } else {
-      Alert.alert('❌ Erro', 'PIN incorreto. Tente novamente.');
+      Alert.alert('❌ PIN Incorreto', result.message);
       setPin('');
+
+      if (result.intruderDetected) {
+        console.log('🚨 INTRUSO DETECTADO! Acionando câmera...');
+        
+        // Envia o alerta de intruso imediatamente
+        const alertResult = await EmergencyService.sendIntruderAlertToSelectedContacts();
+
+        // Informa o usuário sobre a ação tomada
+        if (alertResult.success) {
+          Alert.alert(
+            'ALERTA DE SEGURANÇA',
+            'Múltiplas tentativas incorretas. Um alerta foi enviado para seus contatos de emergência habilitados.'
+          );
+        } else {
+          Alert.alert(
+            'ALERTA DE SEGURANÇA',
+            `Múltiplas tentativas incorretas. Tentamos enviar o alerta, mas houve um erro: ${alertResult.message}`
+          );
+        }
+      }
     }
   };
 

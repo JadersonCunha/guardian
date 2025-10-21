@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, KeyboardAvoidingView, Platform, Image } from 'react-native';
 
 export default function RightsScreen({ navigation }) {
   const [question, setQuestion] = useState('');
@@ -113,6 +113,7 @@ export default function RightsScreen({ navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backBtn}>← Voltar</Text>
         </TouchableOpacity>
+        <Image source={require('../../assets/logo.png')} style={styles.headerLogo} />
         <Text style={styles.title}>🤖 Meus Direitos</Text>
       </View>
 
@@ -183,6 +184,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#0984e3',
     marginRight: 20,
+  },
+  headerLogo: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+    borderRadius: 12,
   },
   title: {
     fontSize: 20,

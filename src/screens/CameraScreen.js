@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Linking, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Linking, ScrollView, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Audio } from 'expo-av';
 import * as Sharing from 'expo-sharing';
@@ -127,6 +127,7 @@ export default function CameraScreen({ navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backBtn}>← Voltar</Text>
         </TouchableOpacity>
+        <Image source={require('../../assets/logo.png')} style={styles.headerLogo} />
         <Text style={styles.title}>📹 Evidências</Text>
       </View>
 
@@ -185,6 +186,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#74b9ff',
     marginRight: 20,
+  },
+  headerLogo: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+    borderRadius: 12,
   },
   title: {
     fontSize: 20,

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform, ScrollView, Image } from 'react-native';
 import AuthService from '../services/AuthService';
 
 export default function RegisterScreen({ onRegisterComplete, onSwitchToLogin }) {
@@ -68,7 +68,8 @@ export default function RegisterScreen({ onRegisterComplete, onSwitchToLogin }) 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.title}>🛡️ Guardian</Text>
+        <Image source={require('../../assets/logo.png')} style={styles.logo} />
+        <Text style={styles.title}>Guardian</Text>
         <Text style={styles.subtitle}>Criar sua conta segura</Text>
         
         <View style={styles.formContainer}>
@@ -158,6 +159,13 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     padding: 20,
+  },
+  logo: {
+    width: 80,
+    height: 80,
+    alignSelf: 'center',
+    marginBottom: 10,
+    borderRadius: 40,
   },
   title: {
     fontSize: 36,

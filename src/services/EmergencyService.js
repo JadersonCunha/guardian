@@ -1,5 +1,5 @@
 import * as Location from 'expo-location';
-import { Platform, Linking } from 'react-native';
+import { Platform, Linking, Alert } from 'react-native';
 import ContactService from './ContactService';
 
 class EmergencyService {
@@ -100,6 +100,42 @@ class EmergencyService {
       }
     } catch (err) {
       console.error('Erro ao abrir WhatsApp:', err);
+    }
+  }
+
+  /**
+   * Sends an intruder alert message to emergency contacts who are configured to receive it.
+   * @returns {Promise<{success: boolean, message: string}>}
+   */
+  static async sendIntruderAlertToSelectedContacts() {
+    console.log('🚨 ENVIANDO ALERTA DE INTRUSO PARA CONTATOS SELECIONADOS!');
+
+    try {
+      // 1. Get emergency contacts
+      const emergencyContacts = await ContactService.getEmergencyContacts();
+      const contactsForIntruderAlert = emergencyContacts.filter(contact => contact.receiveIntruderAlert);
+
+      if (contactsForIntruderAlert.length === 0) {
+        Alert.alert('⚠️ Atenção', 'Nenhum contato de emergência habilitado para receber alertas de intruso.');
+        return { success: false, message: 'Nenhum contato habilitado para alerta de intruso.' };
+      }
+
+      // 2. Construct message
+      const intruderMessage = '🚨 ALERTA DE INTRUSO! Alguém tentou acessar o app e errou o PIN múltiplas vezes. Fique atento(a)!';
+
+      // 3. Send message to selected contacts via WhatsApp
+      for (const contact of contactsForIntruderAlert) {
+        await this.openWhatsApp(contact.phone, intruderMessage);
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Delay to avoid WhatsApp API issues
+      }
+
+      Alert.alert('✅ Alerta enviado!', `O alerta de intruso foi enviado para ${contactsForIntruderAlert.length} contato(s) de emergência.`);
+      console.log('✅ Alerta de intruso enviado.');
+      return { success: true, message: 'Alerta de intruso enviado.' };
+    } catch (err) {
+      console.error('💥 Erro ao capturar e enviar foto do intruso:', err);
+      Alert.alert('Erro', 'Não foi possível capturar ou enviar a foto do intruso.');
+      return { success: false, message: 'Erro ao capturar e enviar foto do intruso.' };
     }
   }
 }
