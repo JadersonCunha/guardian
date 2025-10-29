@@ -181,9 +181,7 @@ O projeto busca parcerias com:
 - ONGs locais de apoio à mulher
 - Universidades e centros de pesquisa
 
-## Licença
 
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
 ## Aviso Importante
 
