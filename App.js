@@ -74,7 +74,7 @@ export default function App() {
     const savedContacts = await ContactService.getEmergencyContacts();
     
     if (savedContacts.length === 0) {
-      Alert.alert('⚠️ Atenção', 'Adicione um contato de emergência primeiro!');
+      setCurrentScreen('contacts');
       return;
     }
 
