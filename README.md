@@ -1,10 +1,10 @@
-# Safe Guardian
+# Female Guardian
 
 Um aplicativo móvel discreto e seguro desenvolvido para auxiliar mulheres em situações de violência doméstica, oferecendo recursos de emergência, documentação e rede de apoio.
 
 ## Sobre o Projeto
 
-O Safe Guardian nasceu da necessidade de criar uma ferramenta tecnológica que pudesse oferecer suporte imediato e discreto para mulheres em situações de vulnerabilidade. O aplicativo foi pensado para ser intuitivo, rápido e, principalmente, seguro.
+O Female Guardian nasceu da necessidade de criar uma ferramenta tecnológica que pudesse oferecer suporte imediato e discreto para mulheres em situações de vulnerabilidade. O aplicativo foi pensado para ser intuitivo, rápido e, principalmente, seguro.
 
 ### Objetivo Principal
 
@@ -64,8 +64,8 @@ Expo CLI
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/seu-usuario/safe-guardian.git
-cd safe-guardian
+git clone https://github.com/seu-usuario/female-guardian.git
+cd female-guardian
 ```
 
 2. Instale as dependências:
@@ -189,7 +189,7 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 
 Este aplicativo é uma ferramenta de auxílio e não substitui o atendimento profissional especializado. Em situações de emergência real, sempre procure ajuda das autoridades competentes através dos canais oficiais.
 
-O Safe Guardian foi desenvolvido com muito cuidado e responsabilidade, pensando na segurança e privacidade das usuárias. Cada linha de código foi escrita com o objetivo de poder fazer a diferença na vida de alguém.
+O Female Guardian foi desenvolvido com muito cuidado e responsabilidade, pensando na segurança e privacidade das usuárias. Cada linha de código foi escrita com o objetivo de poder fazer a diferença na vida de alguém.
 
 ## Contato
 

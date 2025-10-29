@@ -26,7 +26,7 @@ export default function ResetPasswordScreen({ onPasswordReset }) {
         Alert.alert(
           '✅ Sucesso!',
           'Seu PIN foi redefinido. Agora você pode entrar com o novo PIN.',
-          [{ text: 'OK', onPress: onPasswordReset }]
+          [{ text: 'OK', onPress: onPasswordReset }] 
         );
       } else {
         throw new Error(result.error || 'Não foi possível redefinir o PIN.');

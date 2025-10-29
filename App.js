@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, TextInput, KeyboardAvo
 import * as Linking from 'expo-linking';
 import RightsScreen from './src/screens/RightsScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
-import LoginScreen from './src/screens/LoginScreen'; // Import the new LoginScreen
+import LoginScreen from './src/screens/LoginScreen'; 
 import AuthChoiceScreen from './src/screens/AuthChoiceScreen';
 import ForgotPasswordScreen from './src/screens/ForgotPasswordScreen';
 import ResetPasswordScreen from './src/screens/ResetPasswordScreen';
@@ -14,10 +14,10 @@ export default function App() {
   const [pin, setPin] = useState('');
   const [currentScreen, setCurrentScreen] = useState('home');
   const [contacts, setContacts] = useState([]);
-  const [userExists, setUserExists] = useState(null); // null = carregando, true = existe, false = não existe
+  const [userExists, setUserExists] = useState(null); 
   const [userData, setUserData] = useState(null);
-  const [currentAuthView, setCurrentAuthView] = useState('loading'); // 'loading', 'choice', 'login', 'register', 'forgot'
-  const [showWelcomeScreen, setShowWelcomeScreen] = useState(true); // Novo estado
+  const [currentAuthView, setCurrentAuthView] = useState('loading'); 
+  const [showWelcomeScreen, setShowWelcomeScreen] = useState(true); 
   const [deepLink, setDeepLink] = useState(null);
   const pinInputRef = useRef(null);
 
@@ -66,7 +66,7 @@ export default function App() {
 
   const handleRegisterComplete = () => {
     checkUserExists();
-    setCurrentAuthView('choice'); // Após o registro, volta para a tela de escolha
+    setCurrentAuthView('choice'); 
   };
 
   const handleEmergency = async () => {
@@ -98,8 +98,7 @@ export default function App() {
   if (showWelcomeScreen) {
     return (
       <View style={styles.container}>
-        <Image source={require('./assets/logo.png')} style={styles.logo} />
-        <Text style={styles.title}>Guardian</Text>
+        <Text style={styles.title}>Female Guardian</Text>
         <Text style={styles.subtitle}>{userExists === null ? 'Carregando...' : 'Bem-vinda!'}</Text>
       </View>
     );
@@ -152,8 +151,7 @@ export default function App() {
   if (userExists === null) {
     return (
       <View style={styles.container}>
-        <Image source={require('./assets/logo.png')} style={styles.logo} />
-        <Text style={styles.title}>Guardian</Text>
+        <Text style={styles.title}>Female Guardian</Text>
         <Text style={styles.subtitle}>Carregando...</Text>
       </View>
     );
@@ -181,7 +179,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Image source={require('./assets/logo.png')} style={styles.logo} />
-      <Text style={styles.title}>Guardian</Text>
+      <Text style={styles.title}>Female Guardian</Text>
       <Text style={styles.welcome}>Você está protegida!</Text>
       
       <TouchableOpacity style={styles.emergencyBtn} onPress={handleEmergency}>

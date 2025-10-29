@@ -7,7 +7,7 @@ export default function RightsScreen({ navigation }) {
     {
       id: 1,
       type: 'bot',
-      text: '👋 Olá! Sou o assistente "Direitos da Mulher - Guardian". Posso te ajudar com informações sobre seus direitos legais. O que você gostaria de saber?'
+      text: '👋 Olá! Sou o assistente "Direitos da Mulher - Female Guardian". Posso te ajudar com informações sobre seus direitos legais. O que você gostaria de saber?'
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +21,7 @@ export default function RightsScreen({ navigation }) {
       text: question
     };
     
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => [...prev, userMessage]); 
     setQuestion('');
     setIsLoading(true);
 
@@ -33,7 +33,7 @@ export default function RightsScreen({ navigation }) {
         type: 'bot',
         text: response
       };
-      
+
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       Alert.alert('Erro', 'Não consegui conectar com o assistente. Tente novamente.');
@@ -50,7 +50,7 @@ export default function RightsScreen({ navigation }) {
     const requestBody = {
       contents: [{
         parts: [{
-          text: `Você é o assistente "Direitos da Mulher - Guardian", especializado em direitos das mulheres no Brasil. Responda de forma clara, objetiva e acolhedora sobre direitos legais, violência doméstica, Lei Maria da Penha, medidas protetivas e recursos de apoio. Pergunta: ${userQuestion}`
+          text: `Você é o assistente "Direitos da Mulher - Female Guardian", especializado em direitos das mulheres no Brasil. Responda de forma clara, objetiva e acolhedora sobre direitos legais, violência doméstica, Lei Maria da Penha, medidas protetivas e recursos de apoio. Pergunta: ${userQuestion}`
         }]
       }],
       generationConfig: {
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     alignSelf: 'flex-start',
-    backgroundColor: 'white',
+    backgroundColor: 'white', 
     borderRadius: 15,
     padding: 12,
     elevation: 1,

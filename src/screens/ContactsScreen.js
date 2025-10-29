@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, TextInput, Switch, Image } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, TextInput, Switch, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import * as Contacts from 'expo-contacts';
 import ContactService from '../services/ContactService';
 
@@ -9,7 +9,7 @@ export default function ContactsScreen({ navigation }) {
   const [phoneContacts, setPhoneContacts] = useState([]);
   const [filteredContacts, setFilteredContacts] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
-  const [shouldReceiveIntruderAlert, setShouldReceiveIntruderAlert] = useState(true); // Novo estado para o switch
+  const [shouldReceiveIntruderAlert, setShouldReceiveIntruderAlert] = useState(true);
 
   useEffect(() => {
     loadMyContacts();
@@ -64,7 +64,7 @@ export default function ContactsScreen({ navigation }) {
   };
 
   const addContactFromPhone = async (contact) => {
-    await ContactService.addEmergencyContact(contact, shouldReceiveIntruderAlert); // Passa a preferência do switch
+    await ContactService.addEmergencyContact(contact, shouldReceiveIntruderAlert);
     setSearchText('');
     setIsAdding(false);
     loadMyContacts();
@@ -73,7 +73,7 @@ export default function ContactsScreen({ navigation }) {
 
   const addDefaultContact = async () => {
     const contacts = await ContactService.getEmergencyContacts();
-    const hasDefault = contacts.some(c => c.phone === '51985330121');
+    const hasDefault = contacts.some(c => c.phone === '51985330121'); 
     
     if (!hasDefault) { // O contato padrão deve receber alertas por padrão
       await ContactService.addEmergencyContact({
@@ -105,7 +105,7 @@ export default function ContactsScreen({ navigation }) {
         <Text style={styles.personName}>{item.name}</Text>
         <Text style={styles.personPhone}>{item.phone}</Text>
       </View>
-      {item.receiveIntruderAlert && ( // Indicador visual se o contato recebe alerta de intruso
+      {item.receiveIntruderAlert && (
         <View style={styles.intruderAlertIndicator}>
           <Text style={styles.intruderAlertText}>🚨</Text>
         </View>
@@ -120,7 +120,11 @@ export default function ContactsScreen({ navigation }) {
   );
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+    >
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backBtn}>← Voltar</Text>
@@ -211,7 +215,7 @@ export default function ContactsScreen({ navigation }) {
           </View>
         )}
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -291,7 +295,7 @@ const styles = StyleSheet.create({
   },
   intruderAlertIndicator: {
     backgroundColor: '#ffeaa7', // Um amarelo claro para destacar
-    borderRadius: 5,
+    borderRadius: 5, 
     paddingHorizontal: 6,
     paddingVertical: 2,
     marginLeft: 10,

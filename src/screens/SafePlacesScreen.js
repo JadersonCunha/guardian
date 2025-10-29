@@ -122,17 +122,7 @@ export default function SafePlacesScreen({ navigation }) {
   
   const getFallbackPlaces = (coords, specificType = null) => {
     const places = [];
-    
-    places.push({
-      id: 'warning',
-      name: '📍 SUA LOCALIZAÇÃO DETECTADA',
-      address: `Lat: ${coords.latitude.toFixed(6)}, Lng: ${coords.longitude.toFixed(6)}\nClique nos botões abaixo para buscar locais reais próximos.`,
-      phone: null,
-      type: 'warning',
-      hours: 'Localização GPS ativa',
-      distance: 'Precisa'
-    });
-    
+
     if (!specificType || specificType === 'hospital') {
       places.push({
         id: 'hospital_generic',

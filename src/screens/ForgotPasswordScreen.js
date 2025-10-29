@@ -46,8 +46,8 @@ export default function ForgotPasswordScreen({ navigation }) {
   };
 
   const sendPasswordResetRequest = async (email) => {
-    console.log(`SIMULAÇÃO: Pedido de redefinição de senha para ${email}`);
-    const deepLink = 'guardian://reset-password';
+    console.log(`SIMULAÇÃO: Pedido de redefinição de senha para ${email}`); 
+    const deepLink = 'guardian://reset-password'; 
     console.log(`SIMULAÇÃO: O link enviado seria: ${deepLink}`);
     
     return new Promise(resolve => {

@@ -69,7 +69,7 @@ export default function RegisterScreen({ onRegisterComplete, onSwitchToLogin }) 
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Image source={require('../../assets/logo.png')} style={styles.logo} />
-        <Text style={styles.title}>Guardian</Text>
+        <Text style={styles.title}>Female Guardian</Text>
         <Text style={styles.subtitle}>Criar sua conta segura</Text>
         
         <View style={styles.formContainer}>
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
   },
   infoBox: {
     backgroundColor: '#e8f5e8',
-    padding: 15,
+    padding: 15, 
     borderRadius: 10,
     marginTop: 20,
   },

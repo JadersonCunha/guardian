@@ -61,7 +61,7 @@ Se algo não funcionar, anote:
 Marque o que conseguiu testar:
 
 - [ ] Instalei o Expo Go
-- [ ] Abri o app Safe Guardian
+- [ ] Abri o app Female Guardian
 - [ ] Criei minha conta
 - [ ] Fiz login com sucesso
 - [ ] Adicionei um contato de emergência

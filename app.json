@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "guardian-app",
-    "slug": "guardian-app",
+    "name": "Female Guardian",
+    "slug": "female-guardian",
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "guardian",

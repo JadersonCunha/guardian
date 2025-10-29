@@ -4,10 +4,8 @@ import ContactService from './ContactService';
 
 class EmergencyService {
   static async activateEmergency() {
-    console.log('🚨 ATIVANDO EMERGÊNCIA!');
     
     try {
-      const userLocation = await this.getCurrentLocation();
       
       const emergencyContacts = await ContactService.getEmergencyContacts();
       
@@ -16,9 +14,9 @@ class EmergencyService {
         return { success: false, message: 'Adicione contatos de emergência primeiro!' };
       }
       
+      const userLocation = await this.getCurrentLocation();
       await this.sendEmergencyWhatsApp(emergencyContacts, userLocation);
       
-      console.log('✅ Emergência ativada! Mensagens enviadas.');
       return { success: true, message: `WhatsApp aberto para ${emergencyContacts.length} contato(s)` };
     } catch (err) {
       console.error('💥 Erro na emergência:', err);
@@ -29,13 +27,11 @@ class EmergencyService {
   static async getCurrentLocation() {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.log('❌ Permissão de localização negada');
+      if (status !== 'granted') { 
         return null;
       }
 
-      console.log('📍 Buscando localização...');
-      const loc = await Location.getCurrentPositionAsync({
+      const loc = await Location.getCurrentPositionAsync({ 
         accuracy: Location.Accuracy.High,
         timeout: 10000,
       });
@@ -45,7 +41,6 @@ class EmergencyService {
         lng: loc.coords.longitude,
         when: new Date().toISOString(),
       };
-      
       console.log('📍 Localização obtida:', coords.lat, coords.lng);
       return coords;
     } catch (err) {
@@ -62,8 +57,8 @@ class EmergencyService {
         const googleMaps = `https://maps.google.com/?q=${userLoc.lat},${userLoc.lng}`;
         sosMessage += `\n\n📍 Estou aqui: ${googleMaps}`;
         sosMessage += `\n⏰ Enviado em: ${new Date().toLocaleString('pt-BR')}`;
-        sosMessage += `\n\n⚠️ Esta é uma mensagem automática do app Guardian`;
-      } else {
+        sosMessage += `\n\n⚠️ Esta é uma mensagem automática do app Female Guardian`;
+      } else { 
         sosMessage += '\n\n⚠️ Não consegui pegar minha localização, mas preciso de ajuda!';
       }
 
@@ -71,8 +66,7 @@ class EmergencyService {
         await this.openWhatsApp(contact.phone, sosMessage);
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
-      
-      console.log(`💚 WhatsApp aberto para ${contacts.length} contatos`);
+
     } catch (err) {
       console.error('Falha no envio via WhatsApp:', err);
     }
@@ -91,10 +85,9 @@ class EmergencyService {
       const canOpen = await Linking.canOpenURL(whatsappUrl);
       
       if (canOpen) {
-        await Linking.openURL(whatsappUrl);
-        console.log(`💚 WhatsApp aberto para: ${phoneNumber}`);
-      } else {
-        const webUrl = `https://wa.me/${fullPhone}?text=${encodedMessage}`;
+        await Linking.openURL(whatsappUrl); 
+      } else { 
+        const webUrl = `https://wa.me/${fullPhone}?text=${encodedMessage}`; 
         await Linking.openURL(webUrl);
         console.log(`🌐 WhatsApp Web aberto para: ${phoneNumber}`);
       }
@@ -108,11 +101,8 @@ class EmergencyService {
    * @returns {Promise<{success: boolean, message: string}>}
    */
   static async sendIntruderAlertToSelectedContacts() {
-    console.log('🚨 ENVIANDO ALERTA DE INTRUSO PARA CONTATOS SELECIONADOS!');
-
     try {
-      // 1. Get emergency contacts
-      const emergencyContacts = await ContactService.getEmergencyContacts();
+      const emergencyContacts = await ContactService.getEmergencyContacts(); 
       const contactsForIntruderAlert = emergencyContacts.filter(contact => contact.receiveIntruderAlert);
 
       if (contactsForIntruderAlert.length === 0) {
@@ -120,17 +110,14 @@ class EmergencyService {
         return { success: false, message: 'Nenhum contato habilitado para alerta de intruso.' };
       }
 
-      // 2. Construct message
-      const intruderMessage = '🚨 ALERTA DE INTRUSO! Alguém tentou acessar o app e errou o PIN múltiplas vezes. Fique atento(a)!';
+      const intruderMessage = '🚨 ALERTA DE INTRUSO! Alguém tentou acessar o app e errou o PIN múltiplas vezes. Fique atento(a)!'; 
 
-      // 3. Send message to selected contacts via WhatsApp
-      for (const contact of contactsForIntruderAlert) {
-        await this.openWhatsApp(contact.phone, intruderMessage);
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Delay to avoid WhatsApp API issues
+      for (const contact of contactsForIntruderAlert) { 
+        await this.openWhatsApp(contact.phone, intruderMessage); 
+        await new Promise(resolve => setTimeout(resolve, 1000)); 
       }
 
-      Alert.alert('✅ Alerta enviado!', `O alerta de intruso foi enviado para ${contactsForIntruderAlert.length} contato(s) de emergência.`);
-      console.log('✅ Alerta de intruso enviado.');
+      Alert.alert('✅ Alerta enviado!', `O alerta de intruso foi enviado para ${contactsForIntruderAlert.length} contato(s) de emergência.`); 
       return { success: true, message: 'Alerta de intruso enviado.' };
     } catch (err) {
       console.error('💥 Erro ao capturar e enviar foto do intruso:', err);

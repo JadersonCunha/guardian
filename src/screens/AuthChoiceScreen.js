@@ -5,7 +5,7 @@ export default function AuthChoiceScreen({ onNavigateToLogin, onNavigateToRegist
   return (
     <View style={styles.container}>
       <Image source={require('../../assets/logo.png')} style={styles.logo} />
-      <Text style={styles.title}>Guardian</Text>
+      <Text style={styles.title}>Female Guardian</Text>
       <Text style={styles.subtitle}>Sua proteção começa aqui.</Text>
 
       <View style={styles.buttonContainer}>
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     position: 'absolute',
-    bottom: 40,
+    bottom: 40, 
     fontSize: 14,
     color: '#636e72',
     textAlign: 'center',

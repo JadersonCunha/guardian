@@ -36,7 +36,7 @@ export default function CameraScreen({ navigation }) {
     });
 
     if (!result.canceled) {
-      shareEvidence(result.assets[0].uri);
+      shareEvidenceWithContacts(result.assets[0].uri, 'foto');
     }
   };
 
@@ -53,7 +53,7 @@ export default function CameraScreen({ navigation }) {
     });
 
     if (!result.canceled) {
-      shareEvidence(result.assets[0].uri);
+      shareEvidenceWithContacts(result.assets[0].uri, 'vídeo');
     }
   };
 
@@ -91,7 +91,7 @@ export default function CameraScreen({ navigation }) {
     setRecording(null);
     console.log('Gravação parada. URI:', uri);
     if (uri) {
-      shareEvidence(uri);
+      shareEvidenceWithContacts(uri, 'áudio');
     }
   };
 
@@ -101,6 +101,19 @@ export default function CameraScreen({ navigation }) {
       return;
     }
     await Sharing.shareAsync(uri);
+  };
+
+  const shareEvidenceWithContacts = async (uri, mediaType) => {
+    Alert.alert(
+      '📤 Enviar Evidência?',
+      `A evidência (${mediaType}) foi salva. Deseja compartilhá-la agora com seus contatos?`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Sim, Compartilhar', onPress: () => {
+            shareEvidence(uri);
+        }}
+      ]
+    );
   };
 
   const sendEmergencyMessage = async () => {
@@ -142,7 +155,7 @@ export default function CameraScreen({ navigation }) {
             <Text style={styles.buttonText}>Parar Gravação</Text>
             <Text style={styles.buttonSubtext}>Toque para finalizar e compartilhar</Text>
           </TouchableOpacity>
-        ) : (
+        ) : ( 
           <TouchableOpacity style={styles.cameraButton} onPress={openEvidenceRecorder}>
             <Text style={styles.buttonIcon}>📱</Text>
             <Text style={styles.buttonText}>Abrir Câmera/Gravador</Text>
@@ -220,7 +233,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   stopButton: {
-    backgroundColor: '#f1c40f', // Cor amarela para indicar atenção
+    backgroundColor: '#f1c40f',
   },
   emergencyButton: {
     backgroundColor: '#d63031',

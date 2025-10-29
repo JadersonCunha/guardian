@@ -1,4 +1,4 @@
-# Safe Guardian - Documentação Técnica Completa
+# Safe Female Guardian - Documentação Técnica Completa
 
 ## 📋 Índice
 1. [Visão Geral do Projeto](#visão-geral)
@@ -150,7 +150,7 @@ export default function App() {
 const handleLogin = () => {
   if (pin === '1234') {
     setIsLoggedIn(true);
-    Alert.alert('✅ Sucesso!', 'Bem-vinda ao Guardian!');
+    Alert.alert('✅ Sucesso!', 'Bem-vinda ao Female Guardian!');
   } else {
     Alert.alert('❌ Erro', 'PIN incorreto. Tente: 1234');
     setPin('');
@@ -589,8 +589,8 @@ expo build:web
 // app.json - Configurações de publicação
 {
   "expo": {
-    "name": "Safe Guardian",
-    "slug": "safe-guardian",
+    "name": "Female Guardian",
+    "slug": "female-guardian",
     "version": "1.0.0",
     "privacy": "unlisted",
     "platforms": ["ios", "android"],
@@ -654,7 +654,7 @@ expo build:web
 
 ## 🎯 Conclusão
 
-O Safe Guardian representa uma solução tecnológica importante para um problema social crítico. A implementação atual fornece uma base sólida com funcionalidades essenciais de emergência, enquanto a arquitetura permite expansão futura com recursos mais avançados.
+O Safe Female Guardian representa uma solução tecnológica importante para um problema social crítico. A implementação atual fornece uma base sólida com funcionalidades essenciais de emergência, enquanto a arquitetura permite expansão futura com recursos mais avançados.
 
 ### Próximos Passos
 1. **Testes com usuários reais** para validar UX

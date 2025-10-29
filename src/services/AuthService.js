@@ -2,8 +2,7 @@ import * as SecureStore from 'expo-secure-store';
 
 class AuthService {
   // ... (código existente)
-  // Chaves para armazenamento seguro
-  static USER_KEY = 'guardian_user_data';
+  static USER_KEY = 'guardian_user_data'; 
   static PIN_KEY = 'guardian_user_pin';
   static FAILED_ATTEMPTS_KEY = 'guardian_failed_login_attempts';
   static LAST_FAILED_ATTEMPT_TIME_KEY = 'guardian_last_failed_attempt_time';
@@ -27,7 +26,7 @@ class AuthService {
         phone: userData.phone,
         pin: userData.pin,
         createdAt: new Date().toISOString(),
-      };
+      }; 
 
       await SecureStore.setItemAsync(this.USER_KEY, JSON.stringify(user));
       await SecureStore.setItemAsync(this.PIN_KEY, userData.pin);
@@ -41,8 +40,7 @@ class AuthService {
   }
 
   /**
-   * Autentica o usuário e rastreia tentativas falhas.
-   * @param {string} pin - O PIN inserido pelo usuário.
+   * Autentica o usuário e rastreia tentativas falhas. 
    * @returns {Promise<{success: boolean, intruderDetected?: boolean, message: string}>}
    */
   static async authenticateUser(pin) {
@@ -56,7 +54,7 @@ class AuthService {
         if (attempts >= this.MAX_FAILED_ATTEMPTS) {
           return { success: false, intruderDetected: true, message: 'PIN incorreto. Alerta de segurança ativado.' };
         }
-        return { success: false, message: `PIN incorreto. Tentativa ${attempts} de ${this.MAX_FAILED_ATTEMPTS}.` };
+        return { success: false, message: `PIN incorreto. Tentativa ${attempts} de ${this.MAX_FAILED_ATTEMPTS}.` }; 
       }
     } catch (error) {
       console.error('Erro na autenticação:', error);

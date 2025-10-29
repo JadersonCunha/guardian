@@ -22,9 +22,7 @@ export default function LoginScreen({ userData, onLoginSuccess, onForgotPassword
       setPin('');
 
       if (result.intruderDetected) {
-        console.log('🚨 INTRUSO DETECTADO! Acionando câmera...');
         
-        // Envia o alerta de intruso imediatamente
         const alertResult = await EmergencyService.sendIntruderAlertToSelectedContacts();
 
         // Informa o usuário sobre a ação tomada
@@ -50,7 +48,7 @@ export default function LoginScreen({ userData, onLoginSuccess, onForgotPassword
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
       <Image source={require('../../assets/logo.png')} style={styles.logo} />
-      <Text style={styles.title}>Guardian</Text>
+      <Text style={styles.title}>Female Guardian</Text>
       <Text style={styles.subtitle}>Bem-vinda de volta!</Text>
       
       <View style={styles.loginBox}>

@@ -15,7 +15,7 @@ class ContactService {
     }
   }
 
-  static async addEmergencyContact(newPerson, receiveIntruderAlert = true) { // Adicionado receiveIntruderAlert com valor padrão
+  static async addEmergencyContact(newPerson, receiveIntruderAlert = true) {
     try {
       const currentContacts = await this.getEmergencyContacts();
       
@@ -24,7 +24,7 @@ class ContactService {
         name: newPerson.name.trim(),
         phone: newPerson.phone.trim(),
         addedAt: new Date().toISOString(),
-        receiveIntruderAlert: receiveIntruderAlert, // Armazena a preferência
+        receiveIntruderAlert: receiveIntruderAlert,
       };
       
       currentContacts.push(contactToAdd);
