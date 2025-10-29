@@ -189,10 +189,3 @@ Este aplicativo é uma ferramenta de auxílio e não substitui o atendimento pro
 
 O Female Guardian foi desenvolvido com muito cuidado e responsabilidade, pensando na segurança e privacidade das usuárias. Cada linha de código foi escrita com o objetivo de poder fazer a diferença na vida de alguém.
 
-## Contato
-
-Para dúvidas, sugestões ou parcerias, entre em contato através dos canais oficiais do projeto.
-
----
-
-**Desenvolvido com dedicação para fazer a diferença na vida das mulheres brasileiras.**
